@@ -1,47 +1,46 @@
-# Clinical NLP Tutorial with MIMIC-III
+# 30-Day Readmission Risk Tutorial with MIMIC-III
 
-A reproducible clinical NLP tutorial that compares spaCy, scispaCy, and medSpaCy on a disease-focused MIMIC-III discharge-summary cohort. The workflow extracts clinical entities, trains Word2Vec embeddings, tunes t-SNE with trustworthiness, and saves aggregate results only.
+A beginner-friendly machine learning tutorial that predicts whether an adult patient has another hospital admission within 30 days after discharge. The workflow uses structured MIMIC-III admission-history data, compares logistic regression with random forest, and emphasizes leakage prevention, patient-disjoint evaluation, and responsible interpretation.
 
 ## What this tutorial teaches
 
-- How to create a MIMIC-III cohort from `DIAGNOSES_ICD` and `NOTEEVENTS`.
-- How spaCy, scispaCy, and medSpaCy differ in a controlled entity-extraction workflow.
-- How to train Word2Vec on per-note entity sequences.
-- How to tune t-SNE with a fixed seed and trustworthiness score.
-- How to interpret exploratory visualizations responsibly.
+- How to create a 30-day readmission label from structured admissions data.
+- How to use admission-time and prior-history features without leaking future information.
+- Why train/test data should be split by patient rather than by admission.
+- How to compare logistic regression and random forest using AUROC and average precision.
+- Why predictive performance does not establish clinical usefulness, fairness, or causality.
 
 ## Data access and privacy
 
-This repository does **not** include MIMIC-III data, raw note text, patient-level outputs, or credentials. Running the tutorial requires authorized access to the full MIMIC-III database and compliance with its data-use agreement. Do not publish any MIMIC note text or patient-level data.
+This repository contains **code only**. It does not include MIMIC-III data, patient-level outputs, credentials, clinical notes, or generated figures. Running this tutorial requires authorized access to the full MIMIC-III database and compliance with its data-use agreement. Do not upload MIMIC data or patient-level results to a public repository.
 
 ## Setup
 
-1. Create a Python environment (Python 3.10+ recommended).
-2. Install packages:
+1. Create a Python 3.10+ environment.
+2. Install the dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
 3. Obtain authorized access to the full MIMIC-III database.
-4. In `Self_Learning_Clinical_NLP_Tutorial.py`, set `MIMIC_ROOT` to the folder containing the authorized `DIAGNOSES_ICD.csv.gz` and `NOTEEVENTS.csv.gz` files.
-5. Run:
+4. In `readmission_risk_tutorial.py`, set `MIMIC_ROOT` to the directory containing `ADMISSIONS.csv.gz` and `PATIENTS.csv.gz`.
+5. Run the tutorial:
 
    ```bash
-   python Self_Learning_Clinical_NLP_Tutorial.py
+   python readmission_risk_tutorial.py
    ```
 
-The script writes aggregate summaries and figures to `self_learning_outputs/`. It does not export raw note text.
+The script creates an `outputs/` folder containing aggregate metrics and an ROC curve. It does not export raw data or patient-level predictions.
 
 ## Reproducibility
 
-The tutorial fixes the random seed at 42. Word2Vec uses a 50-dimensional skip-gram model, a window of 5, and 150 epochs. t-SNE evaluates perplexities of 5, 10, 20, and 30, then chooses the setting with the strongest local-neighborhood trustworthiness for each pipeline.
+The script fixes the random seed at 42. It uses a patient-disjoint 80/20 split, median imputation and scaling for numeric features, one-hot encoding for categorical features, logistic regression with balanced class weights, and a 300-tree random forest.
 
 ## Important limitation
 
-This is a transparent learning workflow, not a clinical decision-support tool or a benchmark NER evaluation. The entity vocabulary is intentionally controlled for comparison; a production study should use annotated data and report validated precision, recall, and downstream performance.
+This is an educational baseline, not a clinical decision-support system. External validation, calibration assessment, fairness analysis, clinician review, and prospective evaluation are needed before any clinical application.
 
-## Libraries and data citation
+## Citation
 
-- Johnson AEW, et al. MIMIC-III, a freely accessible critical care database. *Scientific Data*. 2016;3:160035. doi:10.1038/sdata.2016.35
-- spaCy, scispaCy, medSpaCy, gensim, and scikit-learn
+Johnson AEW, et al. MIMIC-III, a freely accessible critical care database. *Scientific Data*. 2016;3:160035. doi:10.1038/sdata.2016.35
